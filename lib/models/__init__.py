@@ -10,3 +10,4 @@ from models.county import County
 from models.user import User
 from models.restaurant import Restaurant
 from models.menu_item import MenuItem
+from models.reservation_review import ReservationReview
