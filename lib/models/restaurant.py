@@ -17,14 +17,13 @@ class Restaurant(Base):
     website = Column(String)
     rating = Column(Float, default=0.0)
     special_features = Column(Text)
+    operating_hours = Column(String)
     created_at = Column(DateTime, default=datetime.now)
     
     # relationships
     county = relationship('County', back_populates='restaurants')
-    dishes = relationship('Dish', back_populates='restaurant', cascade='all, delete-orphan')
-    drinks = relationship('Drink', back_populates='restaurant', cascade='all, delete-orphan')
-    reviews = relationship('Review', back_populates='restaurant', cascade='all, delete-orphan')
-    operating_hours = relationship('OperatingHour', back_populates='restaurant', cascade='all, delete-orphan')
+    menu_items = relationship('MenuItem', back_populates='restaurant', cascade='all, delete-orphan')
+    reservations_reviews = relationship('ReservationReview', back_populates='restaurant', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f"<Restaurant(id={self.id}, name='{self.name}', cuisine='{self.cuisine}')>"
@@ -32,15 +31,15 @@ class Restaurant(Base):
     @property
     def average_rating(self):
         # calculate average rating from reviews
-        if not self.reviews:
+        reviews = [rr for rr in self.reservations_reviews if rr.rating is not None]
+        if not reviews:
             return 0.0
-        return sum(review.rating for review in self.reviews) / len(self.reviews)
+        return sum(review.rating for review in reviews) / len(reviews)
     
     @classmethod
-    def create(cls, session, name, county_id, address=None, cuisine=None, 
-            price_range=None, phone=None, email=None, website=None, 
-            special_features=None):
-        # create a new restaurant
+    def create(cls, session, name, county_id, address=None, cuisine=None, price_range=None, 
+               phone=None, email=None, website=None, special_features=None, operating_hours=None):
+        # create a new restaurant"""
         restaurant = cls(
             name=name,
             county_id=county_id,
@@ -50,7 +49,8 @@ class Restaurant(Base):
             phone=phone,
             email=email,
             website=website,
-            special_features=special_features
+            special_features=special_features,
+            operating_hours=operating_hours
         )
         session.add(restaurant)
         session.commit()
@@ -83,7 +83,7 @@ class Restaurant(Base):
     
     def update(self, session, name=None, address=None, cuisine=None, 
            price_range=None, phone=None, email=None, website=None, 
-           special_features=None):
+           special_features=None, operating_hours=None):
         # update restaurant attributes
         if name:
             self.name = name
@@ -101,6 +101,8 @@ class Restaurant(Base):
             self.website = website
         if special_features:
             self.special_features = special_features
+        if operating_hours:
+            self.operating_hours = operating_hours
         session.commit()
     
     def delete(self, session):
