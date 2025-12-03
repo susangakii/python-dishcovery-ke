@@ -7,3 +7,4 @@ Base = declarative_base()
 
 # import models
 from models.county import County
+from models.user import User
