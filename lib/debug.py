@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from models import County, User, Restaurant, MenuItem, ReservationReview
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///dishcovery.db')
+    engine = create_engine('sqlite:///db/dishcovery.db')
     Session = sessionmaker(bind=engine)
     session = Session()
     
@@ -16,88 +16,61 @@ if __name__ == '__main__':
     users = session.query(User).all()
     restaurants = session.query(Restaurant).all()
     menu_items = session.query(MenuItem).all()
-    reservations = session.query(ReservationReview).filter(ReservationReview.reserved_for.isnot(None)).all()
-    reviews = session.query(ReservationReview).filter(ReservationReview.rating.isnot(None)).all()
+    reservations = ReservationReview.get_all_reservations(session)
+    reviews = ReservationReview.get_all_reviews(session)
     
     print("\n" + "=" * 60)
     print("TESTING DISHCOVERY KE")
     print("=" * 60)
     
-    # Test County methods
+    # County tests
     print("\n COUNTY TESTS")
     print("-" * 60)
-    county = counties[0]
-    print(f"County: {county.name}")
-    print(f"  Restaurants: {len(county.restaurants)}")
-    print(f"  Find by name: {County.find_by_name(session, county.name).name}")
-    print(f"  Find by ID: {County.find_by_id(session, county.id).name}")
+    c = counties[0]
+    print(f"County: {c.name} | Restaurants: {len(c.restaurants)}")
+    print(f"Find by name: {County.find_by_name(session, c.name).name}")
     
-    # Test User methods
+    # User tests
     print("\n USER TESTS")
     print("-" * 60)
-    user = users[0]
-    print(f"User: {user.name}")
-    print(f"  Email: {user.email}")
-    user_reservations = ReservationReview.find_reservations_by_user(session, user.id)
-    user_reviews = ReservationReview.find_reviews_by_user(session, user.id)
-    print(f"  Reservations made: {len(user_reservations)}")
-    print(f"  Reviews written: {len(user_reviews)}")
-    print(f"  Find by email: {User.find_by_email(session, user.email).name}")
+    u = users[0]
+    print(f"User: {u.name} ({u.email})")
+    print(f"Reservations: {len(ReservationReview.find_reservations_by_user(session, u.id))}")
+    print(f"Reviews: {len(ReservationReview.find_reviews_by_user(session, u.id))}")
     
-    # Test Restaurant methods
+    # Restaurant tests
     print("\n RESTAURANT TESTS")
     print("-" * 60)
-    restaurant = restaurants[0]
-    print(f"Restaurant: {restaurant.name}")
-    print(f"  County: {restaurant.county.name}")
-    print(f"  Cuisine: {restaurant.cuisine}")
-    print(f"  Operating Hours: {restaurant.operating_hours}")
-    print(f"  Rating: {restaurant.rating:.1f}⭐")
-    print(f"  Average rating: {restaurant.average_rating:.1f}")
-    print(f"  Menu items: {len(restaurant.menu_items)}")
-    rest_reservations = ReservationReview.find_reservations_by_restaurant(session, restaurant.id)
-    rest_reviews = ReservationReview.find_reviews_by_restaurant(session, restaurant.id)
-    print(f"  Reservations: {len(rest_reservations)}")
-    print(f"  Reviews: {len(rest_reviews)}")
-    print(f"  Find by county: {len(Restaurant.find_by_county(session, restaurant.county_id))} restaurants")
-    print(f"  Find by cuisine: {len(Restaurant.find_by_cuisine(session, restaurant.cuisine))} restaurants")
+    r = restaurants[0]
+    print(f"Restaurant: {r.name} | {r.county.name}")
+    print(f"Cuisine: {r.cuisine} | Rating: {r.rating:.1f}⭐")
+    print(f"Menu: {len(r.menu_items)} items | Hours: {r.operating_hours}")
+    print(f"Find by county: {len(Restaurant.find_by_county(session, r.county_id))}")
     
-    # Test MenuItem methods
+    # MenuItem tests
     print("\n MENU ITEM TESTS")
     print("-" * 60)
-    menu_item = menu_items[0]
-    print(f"Menu Item: {menu_item.name}")
-    print(f"  Restaurant: {menu_item.restaurant.name}")
-    print(f"  Price: {menu_item.price} KES")
-    print(f"  Description: {menu_item.description}")
-    print(f"  Search 'Ravioli': {len(MenuItem.search_by_name(session, 'Ravioli'))} items")
-    print(f"  Find by restaurant: {len(MenuItem.find_by_restaurant(session, menu_item.restaurant_id))} items")
+    m = menu_items[0]
+    print(f"Item: {m.name} ({m.price} KES) at {m.restaurant.name}")
+    print(f"Search 'Ravioli': {len(MenuItem.search_by_name(session, 'Ravioli'))} found")
     
-    # Test Reservation methods
+    # Reservation tests
     print("\n RESERVATION TESTS")
     print("-" * 60)
     if reservations:
-        reservation = reservations[0]
-        print(f"Reservation by: {reservation.user.name}")
-        print(f"  Restaurant: {reservation.restaurant.name}")
-        print(f"  Reserved for: {reservation.reserved_for} people")
-        print(f"  Time: {reservation.reservation_time}")
-        print(f"  Is reservation: {reservation.is_reservation}")
-        print(f"  Is review: {reservation.is_review}")
-    print(f"  Total reservations: {len(ReservationReview.get_all_reservations(session))}")
+        res = reservations[0]
+        print(f"Reservation: {res.user.name} at {res.restaurant.name}")
+        print(f"For {res.reserved_for} people at {res.reservation_time}")
+        print(f"Is reservation: {res.is_reservation} | Is review: {res.is_review}")
     
-    # Test Review methods
+    # Review tests
     print("\n REVIEW TESTS")
     print("-" * 60)
     if reviews:
-        review = reviews[0]
-        print(f"Review by: {review.user.name}")
-        print(f"  Restaurant: {review.restaurant.name}")
-        print(f"  Rating: {review.rating_stars}")
-        print(f"  Text: {review.review_text}")
-        print(f"  Is reservation: {review.is_reservation}")
-        print(f"  Is review: {review.is_review}")
-    print(f"  Total reviews: {len(ReservationReview.get_all_reviews(session))}")
+        rev = reviews[0]
+        print(f"Review: {rev.rating_stars} by {rev.user.name}")
+        print(f"Restaurant: {rev.restaurant.name}")
+        print(f"Is reservation: {rev.is_reservation} | Is review: {rev.is_review}")
     
     print("\n" + "=" * 60)
     print("✓ ALL TESTS COMPLETED")
