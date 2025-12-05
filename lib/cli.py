@@ -36,7 +36,7 @@ def main_menu():
     print("\n" + "=" * 80)
     print("🍽️  DISHCOVERY KE - RESTAURANT DISCOVERY SYSTEM  🍽️".center(80))
     print("=" * 80)
-    print("\n📋 MAIN MENU:")
+    print("\n MAIN MENU:")
     print("-" * 80)
     print("    RESTAURANTS")
     print("  1. View All Restaurants")
@@ -87,7 +87,7 @@ def main():
     
     while True:
         main_menu()
-        choice = input("\n👉 Enter your choice: ").strip()
+        choice = input("\n Enter your choice: ").strip()
         
         if choice == "0":
             exit_program()
@@ -148,7 +148,7 @@ def main():
         else:
             print("\n❌ Invalid choice. Please enter a number from 0-27.")
         
-        input("\n📍 Press Enter to continue...")
+        input("\n Press Enter to continue...")
 
 if __name__ == "__main__":
     main()
