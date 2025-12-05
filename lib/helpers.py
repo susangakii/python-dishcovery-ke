@@ -110,7 +110,7 @@ def add_restaurant():
 def update_restaurant():
     """Update restaurant"""
     session = Session()
-    print("\n✏️  Update Restaurant")
+    print("\n  Update Restaurant")
     
     rest_id = safe_int(get_input("Restaurant ID: "))
     restaurant = Restaurant.find_by_id(session, rest_id) if rest_id else None
@@ -155,7 +155,7 @@ def view_restaurant_details():
     
     reservations = ReservationReview.find_reservations_by_restaurant(session, rest_id)
     if reservations:
-        print(f"\n📅 Reservations ({len(reservations)}):")
+        print(f"\n Reservations ({len(reservations)}):")
         for res in reservations:
             print(f"  • {res.user.name} - {res.reserved_for} people")
     
@@ -164,6 +164,30 @@ def view_restaurant_details():
         print(f"\n⭐ Reviews ({len(reviews)}):")
         for rev in reviews:
             print(f"  {rev.rating_stars} - {rev.user.name}: \"{rev.review_text}\"")
+    session.close()
+
+def delete_restaurant():
+    """Delete restaurant"""
+    session = Session()
+    print("\n Delete Restaurant")
+    
+    rest_id = safe_int(get_input("Restaurant ID: "))
+    restaurant = Restaurant.find_by_id(session, rest_id) if rest_id else None
+    
+    if not restaurant:
+        print("❌ Restaurant not found.")
+        session.close()
+        return
+    
+    confirm = get_input(f"Delete '{restaurant.name}'? (yes/no): ").lower()
+    if confirm == 'yes':
+        try:
+            restaurant.delete(session)
+            print("✅ Restaurant deleted!")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    else:
+        print("❌ Deletion cancelled.")
     session.close()
 
 # Menu Item Functions
@@ -208,7 +232,7 @@ def add_menu_item():
 def update_menu_item():
     """Update menu item"""
     session = Session()
-    print("\n✏️  Update Menu Item")
+    print("\n  Update Menu Item")
     
     item_id = safe_int(get_input("Menu Item ID: "))
     item = MenuItem.find_by_id(session, item_id) if item_id else None
@@ -227,6 +251,51 @@ def update_menu_item():
         price=float(price_str) if price_str else None
     )
     print("✅ Updated!")
+    session.close()
+
+def view_menu_item_details():
+    """View specific menu item by ID"""
+    session = Session()
+    item_id = safe_int(get_input("\nMenu Item ID: "))
+    item = MenuItem.find_by_id(session, item_id) if item_id else None
+    
+    if not item:
+        print("❌ Menu item not found.")
+        session.close()
+        return
+    
+    print(f"\n🍽️  Menu Item Details")
+    print("=" * 80)
+    print(f"ID: {item.id}")
+    print(f"Name: {item.name}")
+    print(f"Description: {item.description}")
+    print(f"Price: {item.price} KES")
+    print(f"Restaurant: {item.restaurant.name} ({item.restaurant.county.name})")
+    print(f"Cuisine: {item.restaurant.cuisine}")
+    session.close()
+
+def delete_menu_item():
+    """Delete menu item"""
+    session = Session()
+    print("\n  Delete Menu Item")
+    
+    item_id = safe_int(get_input("Menu Item ID: "))
+    item = MenuItem.find_by_id(session, item_id) if item_id else None
+    
+    if not item:
+        print("❌ Menu item not found.")
+        session.close()
+        return
+    
+    confirm = get_input(f"Delete '{item.name}'? (yes/no): ").lower()
+    if confirm == 'yes':
+        try:
+            item.delete(session)
+            print("✅ Menu item deleted!")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    else:
+        print("❌ Deletion cancelled.")
     session.close()
 
 # Reservation Functions
@@ -265,7 +334,7 @@ def view_reservations():
         session.close()
         return
     
-    print(f"\n📅 Reservations for {restaurant.name}:")
+    print(f"\n Reservations for {restaurant.name}:")
     for res in reservations:
         print(f"  ID: {res.id} | {res.user.name} - {res.reserved_for} people at {res.reservation_time}")
     session.close()
@@ -273,7 +342,7 @@ def view_reservations():
 def update_reservation():
     """Update reservation"""
     session = Session()
-    print("\n✏️  Update Reservation")
+    print("\n  Update Reservation")
     
     res_id = safe_int(get_input("Reservation ID: "))
     reservation = ReservationReview.find_by_id(session, res_id) if res_id else None
@@ -295,6 +364,51 @@ def update_reservation():
         print("✅ Updated!")
     except Exception as e:
         print(f"❌ Error: {e}")
+    session.close()
+
+def view_reservation_details():
+    """View specific reservation by ID"""
+    session = Session()
+    res_id = safe_int(get_input("\nReservation ID: "))
+    reservation = ReservationReview.find_by_id(session, res_id) if res_id else None
+    
+    if not reservation or not reservation.is_reservation:
+        print("❌ Reservation not found.")
+        session.close()
+        return
+    
+    print(f"\n Reservation Details")
+    print("=" * 80)
+    print(f"ID: {reservation.id}")
+    print(f"Restaurant: {reservation.restaurant.name}")
+    print(f"Customer: {reservation.user.name} ({reservation.user.email})")
+    print(f"Party Size: {reservation.reserved_for} people")
+    print(f"Date & Time: {reservation.reservation_time}")
+    print(f"Status: Active")
+    session.close()
+
+def delete_reservation():
+    """Delete reservation"""
+    session = Session()
+    print("\n  Delete Reservation")
+    
+    res_id = safe_int(get_input("Reservation ID: "))
+    reservation = ReservationReview.find_by_id(session, res_id) if res_id else None
+    
+    if not reservation or not reservation.is_reservation:
+        print("❌ Reservation not found.")
+        session.close()
+        return
+    
+    confirm = get_input(f"Delete reservation for {reservation.user.name}? (yes/no): ").lower()
+    if confirm == 'yes':
+        try:
+            reservation.delete(session)
+            print("✅ Reservation deleted!")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    else:
+        print("❌ Deletion cancelled.")
     session.close()
 
 # Review Functions
@@ -341,7 +455,7 @@ def view_restaurant_reviews():
 def update_review():
     """Update review"""
     session = Session()
-    print("\n✏️  Update Review")
+    print("\n  Update Review")
     
     rev_id = safe_int(get_input("Review ID: "))
     review = ReservationReview.find_by_id(session, rev_id) if rev_id else None
@@ -362,4 +476,49 @@ def update_review():
         print("✅ Updated!")
     except Exception as e:
         print(f"❌ Error: {e}")
+    session.close()
+
+def view_review_details():
+    """View specific review by ID"""
+    session = Session()
+    rev_id = safe_int(get_input("\nReview ID: "))
+    review = ReservationReview.find_by_id(session, rev_id) if rev_id else None
+    
+    if not review or not review.is_review:
+        print("❌ Review not found.")
+        session.close()
+        return
+    
+    print(f"\n⭐ Review Details")
+    print("=" * 80)
+    print(f"ID: {review.id}")
+    print(f"Restaurant: {review.restaurant.name}")
+    print(f"Reviewer: {review.user.name}")
+    print(f"Rating: {review.rating_stars} ({review.rating}/5)")
+    print(f"Review: \"{review.review_text}\"")
+    print(f"Date: {review.created_at if hasattr(review, 'created_at') else 'N/A'}")
+    session.close()
+
+def delete_review():
+    """Delete review"""
+    session = Session()
+    print("\n  Delete Review")
+    
+    rev_id = safe_int(get_input("Review ID: "))
+    review = ReservationReview.find_by_id(session, rev_id) if rev_id else None
+    
+    if not review or not review.is_review:
+        print("❌ Review not found.")
+        session.close()
+        return
+    
+    confirm = get_input(f"Delete review by {review.user.name}? (yes/no): ").lower()
+    if confirm == 'yes':
+        try:
+            review.delete(session)
+            print("✅ Review deleted!")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    else:
+        print("❌ Deletion cancelled.")
     session.close()
