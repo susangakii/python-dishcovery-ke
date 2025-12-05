@@ -14,6 +14,11 @@ from helpers import (
     update_menu_item,
     view_menu_item_details,
     delete_menu_item,
+    list_all_users,
+    view_user_details,
+    add_user,
+    update_user,
+    delete_user,
     make_reservation,
     view_reservations,
     update_reservation,
@@ -33,6 +38,7 @@ def main_menu():
     print("=" * 80)
     print("\n📋 MAIN MENU:")
     print("-" * 80)
+    print("    RESTAURANTS")
     print("  1. View All Restaurants")
     print("  2. Search Restaurants by County")
     print("  3. Search Restaurants by Cuisine")
@@ -41,23 +47,33 @@ def main_menu():
     print("  6. Update Restaurant")
     print("  7. Delete Restaurant")
     print("-" * 80)
+    print("   MENU ITEMS")
     print("  8. Search Menu Items")
     print("  9. View Menu Item Details (by ID)")
-    print("  10. Add Menu Item to Restaurant")
+    print("  10. Add Menu Item")
     print("  11. Update Menu Item")
     print("  12. Delete Menu Item")
     print("-" * 80)
-    print("  13. Make Reservation")
-    print("  14. View Restaurant Reservations")
-    print("  15. View Reservation Details (by ID)")
-    print("  16. Update Reservation")
-    print("  17. Delete Reservation")
+    print("   USERS")
+    print("  13. View All Users")
+    print("  14. View User Details (by ID)")
+    print("  15. Add New User")
+    print("  16. Update User")
+    print("  17. Delete User")
     print("-" * 80)
-    print("  18. Add Review")
-    print("  19. View Restaurant Reviews")
-    print("  20. View Review Details (by ID)")
-    print("  21. Update Review")
-    print("  22. Delete Review")
+    print("   RESERVATIONS")
+    print("  18. Make Reservation")
+    print("  19. View Restaurant Reservations")
+    print("  20. View Reservation Details (by ID)")
+    print("  21. Update Reservation")
+    print("  22. Delete Reservation")
+    print("-" * 80)
+    print("   REVIEWS")
+    print("  23. Add Review")
+    print("  24. View Restaurant Reviews")
+    print("  25. View Review Details (by ID)")
+    print("  26. Update Review")
+    print("  27. Delete Review")
     print("-" * 80)
     print("  0. Exit")
     print("=" * 80)
@@ -71,7 +87,7 @@ def main():
     
     while True:
         main_menu()
-        choice = input("\n Enter your choice: ").strip()
+        choice = input("\n👉 Enter your choice: ").strip()
         
         if choice == "0":
             exit_program()
@@ -100,29 +116,39 @@ def main():
         elif choice == "12":
             delete_menu_item()
         elif choice == "13":
-            make_reservation()
+            list_all_users()
         elif choice == "14":
-            view_reservations()
+            view_user_details()
         elif choice == "15":
-            view_reservation_details()
+            add_user()
         elif choice == "16":
-            update_reservation()
+            update_user()
         elif choice == "17":
-            delete_reservation()
+            delete_user()
         elif choice == "18":
-            add_review()
+            make_reservation()
         elif choice == "19":
-            view_restaurant_reviews()
+            view_reservations()
         elif choice == "20":
-            view_review_details()
+            view_reservation_details()
         elif choice == "21":
-            update_review()
+            update_reservation()
         elif choice == "22":
+            delete_reservation()
+        elif choice == "23":
+            add_review()
+        elif choice == "24":
+            view_restaurant_reviews()
+        elif choice == "25":
+            view_review_details()
+        elif choice == "26":
+            update_review()
+        elif choice == "27":
             delete_review()
         else:
-            print("\n❌ Invalid choice. Please enter a number from 0-22.")
+            print("\n❌ Invalid choice. Please enter a number from 0-27.")
         
-        input("\n Press Enter to continue...")
+        input("\n📍 Press Enter to continue...")
 
 if __name__ == "__main__":
     main()

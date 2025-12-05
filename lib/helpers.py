@@ -298,6 +298,107 @@ def delete_menu_item():
         print("❌ Deletion cancelled.")
     session.close()
 
+# User Functions
+def list_all_users():
+    """List all users"""
+    session = Session()
+    users = User.get_all(session)
+    
+    if not users:
+        print("\n❌ No users found.")
+        session.close()
+        return
+    
+    print(f"\n All Users ({len(users)} found):")
+    print("-" * 80)
+    for u in users:
+        print(f"  ID: {u.id} - {u.name} ({u.email})")
+    session.close()
+
+def view_user_details():
+    """View specific user by ID"""
+    session = Session()
+    user_id = safe_int(get_input("\nUser ID: "))
+    user = User.find_by_id(session, user_id) if user_id else None
+    
+    if not user:
+        print("❌ User not found.")
+        session.close()
+        return
+    
+    print(f"\n User Details")
+    print("=" * 80)
+    print(f"ID: {user.id}")
+    print(f"Name: {user.name}")
+    print(f"Email: {user.email}")
+    
+    reservations = ReservationReview.find_reservations_by_user(session, user_id)
+    reviews = ReservationReview.find_reviews_by_user(session, user_id)
+    print(f"\nReservations: {len(reservations)} | Reviews: {len(reviews)}")
+    session.close()
+
+def add_user():
+    """Add new user"""
+    session = Session()
+    print("\n➕ Add New User")
+    
+    name = get_input("Name: ")
+    email = get_input("Email: ")
+    password = get_input("Password: ")
+    
+    try:
+        user = User.create(session, name, email, password)
+        print(f"✅ User added! ID: {user.id}")
+    except Exception as e:
+        print(f"❌ Error: {e}")
+    session.close()
+
+def update_user():
+    """Update user"""
+    session = Session()
+    print("\n  Update User")
+    
+    user_id = safe_int(get_input("User ID: "))
+    user = User.find_by_id(session, user_id) if user_id else None
+    
+    if not user:
+        print("❌ User not found.")
+        session.close()
+        return
+    
+    print(f"Updating: {user.name} (leave blank to keep current)")
+    user.update(session,
+        name=get_input(f"Name [{user.name}]: ", False),
+        email=get_input(f"Email [{user.email}]: ", False),
+        password=get_input("New password (leave blank to keep): ", False)
+    )
+    print("✅ Updated!")
+    session.close()
+
+def delete_user():
+    """Delete user"""
+    session = Session()
+    print("\n  Delete User")
+    
+    user_id = safe_int(get_input("User ID: "))
+    user = User.find_by_id(session, user_id) if user_id else None
+    
+    if not user:
+        print("❌ User not found.")
+        session.close()
+        return
+    
+    confirm = get_input(f"Delete '{user.name}'? (yes/no): ").lower()
+    if confirm == 'yes':
+        try:
+            user.delete(session)
+            print("✅ User deleted!")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+    else:
+        print("❌ Deletion cancelled.")
+    session.close()
+    
 # Reservation Functions
 def make_reservation():
     """Make reservation"""
