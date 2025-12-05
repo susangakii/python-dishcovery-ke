@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
 import sys
-sys.path.append('models')
+import os
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import County, User, Restaurant, MenuItem, ReservationReview
 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///db/dishcovery.db')
+    engine = create_engine('sqlite:///models/db/dishcovery.db')
     Session = sessionmaker(bind=engine)
     session = Session()
     

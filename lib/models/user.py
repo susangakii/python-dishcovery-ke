@@ -13,7 +13,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now)
     
     # relationships
-    reviews = relationship('Review', back_populates='user', cascade='all, delete-orphan')
+    reservations_reviews = relationship('ReservationReview', back_populates='user', cascade='all, delete-orphan')
     
     def __repr__(self):
         return f"<User(id={self.id}, name='{self.name}', email='{self.email}')>"

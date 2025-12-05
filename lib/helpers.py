@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), 'models'))
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from datetime import datetime
 from models import Session, County, User, Restaurant, MenuItem, ReservationReview

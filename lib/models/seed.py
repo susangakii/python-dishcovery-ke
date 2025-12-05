@@ -2,15 +2,16 @@
 
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
 from models import Base, County, User, Restaurant, MenuItem, ReservationReview
-
+from __init__ import Base
+ 
 if __name__ == '__main__':
-    engine = create_engine('sqlite:///dishcovery.db')
+    engine = create_engine('sqlite:///db/dishcovery.db')
     Session = sessionmaker(bind=engine)
     session = Session()
     
